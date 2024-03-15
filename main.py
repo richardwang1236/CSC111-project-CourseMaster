@@ -1,8 +1,9 @@
 import subprocess
 import json
 import graph
-
-
+import networkx as nx
+import matplotlib.pyplot as plt
+import visualization
 def run_spider():
     subprocess.run(['scrapy', 'crawl', 'courses', '-O', 'courses.json', '--nolog'], capture_output=True, cwd='./course')
 
@@ -46,3 +47,4 @@ if __name__ == '__main__':
     transfer_to_graphs(courses, directed_graph, undirected_graph)
     print(directed_graph.see_pre('STA314H1'))
     print(undirected_graph.get_exc('STA314H1'))
+    visualization.visualize_graph(undirected_graph)
