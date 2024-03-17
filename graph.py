@@ -149,6 +149,9 @@ class Graph:
                 g.add_vertex(v)
             for v in a1:
                 g.add_edge(v[0], v[1])
+            for x in self._vertices[item].neighbours:
+                g.add_edge(item, x.item)
+
             return g
 
     def to_networkx(self, max_vertices: int = 50000) -> nx.Graph:
