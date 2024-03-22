@@ -62,8 +62,10 @@ class _Vertex:
         visited.add(self)
         a = {self.item}
         for u in self.neighbours:
-            if u not in visited:
-                a1.append((self.item, u.item))
+            path=(self.item, u.item)
+            # if u not in visited:
+            if path not in a1:
+                a1.append(path)
                 a = a.union(u.get_connected_component(visited))
         return a
 
@@ -149,8 +151,8 @@ class Graph:
                 g.add_vertex(v)
             for v in a1:
                 g.add_edge(v[0], v[1])
-            for x in self._vertices[item].neighbours:
-                g.add_edge(item, x.item)
+            # for x in self._vertices[item].neighbours:
+            #     g.add_edge(item, x.item)
 
             return g
 

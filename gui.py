@@ -143,4 +143,4 @@ class MainWindow(tk.Tk):
         if len(self.text3.get()) == 8:
             g = self.undirected_graph.get_exc(self.text3.get())
             visualization.visualize_graph(g, max_vertices=500, item=self.text3.get(),
-                                          title=f'exclusion for {self.text3.get()}')
+                                          title=f'exclusion for {self.text3.get()}',layout='kamada_kawai_layout')

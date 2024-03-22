@@ -56,7 +56,7 @@ def visualize_graph(graph: graph.Graph,
                      y=y_edges,
                      mode='lines',
                      name='edges',
-                     line=dict(color=LINE_COLOUR, width=5),
+                     line=dict(color=LINE_COLOUR, width=3),
                      hoverinfo='none',
                      )
     trace4 = Scatter(x=x_values,
