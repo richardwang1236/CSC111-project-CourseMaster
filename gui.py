@@ -5,6 +5,7 @@ import visualization
 class MainWindow(tk.Tk):
     def __init__(self, height, width, undirected_graph, directedgraph, courses):
         super().__init__()
+        self.text5 = None
         self.text4 = None
         self.text3 = None
         self.entry = None
@@ -30,6 +31,7 @@ class MainWindow(tk.Tk):
     def button_click(self):
         new = tk.Tk()
         new.geometry('300x400')
+        new.title('Visualization for exclusion')
         options = ["small", "medium", "large"]
         self.selected_option = tk.StringVar(new)
         self.selected_option.set(options[1])
@@ -41,6 +43,7 @@ class MainWindow(tk.Tk):
     def button_click1(self):
         new1 = tk.Tk()
         new1.geometry('500x500')
+        new1.title('Statistics')
         course_utsg = [c for c in self.undirected_graph.get_vertices().values() if c.item[-1] == '1']
         course_utsc = [c for c in self.undirected_graph.get_vertices().values() if c.item[-1] == '3']
         course_utm = [c for c in self.undirected_graph.get_vertices().values() if c.item[-1] == '5']
@@ -81,6 +84,7 @@ class MainWindow(tk.Tk):
             tk.Radiobutton(new1, text=option, variable=self.selected_option1, value=option,
                            command=self.update_text).pack()
         self.text = tk.StringVar(new1)
+        self.text.set(self.text_short)
 
         t = tk.Label(new1, textvariable=self.text, wraplength=400, font=("Helvetica", 15))
         t.pack()
@@ -98,49 +102,70 @@ class MainWindow(tk.Tk):
             a = 1000
         else:
             a = 10000
-        visualization.visualize_graph(self.undirected_graph, max_vertices=a,title=f'exclusion relationship for all courses ({a}) size')
+        visualization.visualize_graph(self.undirected_graph, max_vertices=a,title=f'exclusion relationship for all '
+                                                                                  f'courses ({a}) size')
 
     def search(self):
         query = self.entry.get().upper()
         result = [c for c in self.courses if query in c]
 
-        if 0 < len(result) < 10:
-            self.text3.set(' '.join(result))
+        if 1 < len(result) < 10:
+            self.text3.set(f'Classes: {', '.join(result)}')
+        elif len(result) == 1:
+            self.text3.set(result[0])
         elif len(result) == 0:
             self.text3.set("No result")
         else:
-            self.text3.set('be more specific！')
+            self.text3.set('Be more specific！')
 
-    def button_click3(self):
-        click3 = tk.Tk()
-        click3.geometry('500x500')
-        self.entry = tk.Entry(click3)
-        self.text3 = tk.StringVar(click3, value='Searching!')
-        self.text4 = tk.StringVar(click3)
-        self.entry.pack()
-        search_button = tk.Button(click3, text="Search", command=self.search)
-        search_button.pack()
-        show = tk.Label(click3, textvariable=self.text3, wraplength=400)
-        show.pack()
-        show1 = tk.Label(click3, textvariable=self.text4, wraplength=400)
-        detail = tk.Button(click3, text="detail", command=self.detail)
-        detail.pack()
-        show1.pack()
-        vis_exc = tk.Button(click3, text='vis_exc', command=self.exc)
-        vis_exc.pack()
-
-    def detail(self):
+        # beginning of detail
         if len(self.text3.get()) == 8:
             course = self.courses[self.text3.get()]
             br = course.br
             intro = course.introduction
             title = course.title
             dis = course.distribution
-            text = f'{title}\n{intro}\ndistribution：{dis}\nBreadth Requirements: {br}\n '
+            text = f'{title}\n{intro}\ndistribution：{dis[0]}\nBreadth Req: {br[0]}'
             self.text4.set(text)
+        else:
+            text = 'Please narrow down your search to view details!'
+            self.text4.set(text)
+        # end of detail
+
+    def button_click3(self):
+        click3 = tk.Tk()
+        click3.geometry('500x500')
+        click3.title('Course Search')
+        self.entry = tk.Entry(click3)
+        self.text3 = tk.StringVar(click3, value='Search for a Class!')
+        self.text4 = tk.StringVar(click3)
+        self.text5 = tk.StringVar(click3)
+        self.entry.pack()
+        search_button = tk.Button(click3, text="Search", command=self.search)
+        search_button.pack()
+        show = tk.Label(click3, textvariable=self.text3, wraplength=400)
+        show.pack()
+        show1 = tk.Label(click3, textvariable=self.text4, wraplength=400)
+        show1.pack()
+        # detail = tk.Button(click3, text="detail", command=self.detail)
+        # detail.pack()
+        vis_exc = tk.Button(click3, text='vis_exc', command=self.exc)
+        vis_exc.pack()
+        show2 = tk.Label(click3, textvariable=self.text5, wraplength=400)
+        show2.pack()
+
+    def detail(self):
+        pass
 
     def exc(self):
         if len(self.text3.get()) == 8:
+            text = 'Loading Graph...'
+            self.text5.set(text)
             g = self.undirected_graph.get_exc(self.text3.get())
             visualization.visualize_graph(g, max_vertices=500, item=self.text3.get(),
                                           title=f'exclusion for {self.text3.get()}',layout='kamada_kawai_layout')
+            text = 'Graph Loaded!'
+            self.text5.set(text)
+        else:
+            text = 'Narrow your search to view exclusions!'
+            self.text5.set(text)

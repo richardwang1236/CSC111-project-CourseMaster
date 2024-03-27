@@ -2,6 +2,7 @@ import networkx as nx
 from plotly.graph_objs import Scatter, Figure
 import graph
 import plotly.graph_objects as go
+
 COLOUR_SCHEME = [
     '#2E91E5', '#E15F99', '#1CA71C', '#FB0D0D', '#DA16FF', '#222A2A', '#B68100',
     '#750D86', '#EB663B', '#511CFB', '#00A08B', '#FB00D1', '#FC0080', '#B2828D',
@@ -14,12 +15,13 @@ VERTEX_BORDER_COLOUR = 'rgb(50, 50, 50)'
 BOOK_COLOUR = 'rgb(89, 205, 105)'
 USER_COLOUR = 'rgb(105, 89, 205)'
 h5_COLOUR = 'rgb(255, 217, 102)'
-red_COLOUR= 'rgb(220,20,60)'
+red_COLOUR = 'rgb(220,20,60)'
 
-def visualize_graph(graph: graph.Graph,
+
+def visualize_graph(gp: graph.Graph,
                     layout: str = 'spring_layout',
                     max_vertices: int = 50000,
-                    output_file: str = '',item=None,title='') -> None:
+                    output_file: str = '', item=None, title='') -> None:
     """Use plotly and networkx to visualize the given graph.
 
     Optional arguments:
@@ -28,7 +30,7 @@ def visualize_graph(graph: graph.Graph,
         - output_file: a filename to save the plotly image to (rather than displaying
             in your web browser)
     """
-    graph_nx = graph.to_networkx(max_vertices)
+    graph_nx = gp.to_networkx(max_vertices)
 
     pos = getattr(nx, layout)(graph_nx)
 
@@ -38,7 +40,7 @@ def visualize_graph(graph: graph.Graph,
     names = [graph_nx.nodes[k]['kind'] for k in graph_nx.nodes]
     colours = []
     for name in names:
-        if name==item:
+        if name == item:
             colours.append(red_COLOUR)
         elif name[-1] == '1':
             colours.append(BOOK_COLOUR)
@@ -75,7 +77,7 @@ def visualize_graph(graph: graph.Graph,
 
     data1 = [trace3, trace4]
     fig = Figure(data=data1)
-    fig.update_layout(title_text=title, showlegend=False,margin=dict(l=50, r=50, t=50, b=50))
+    fig.update_layout(title_text=title, showlegend=False, margin=dict(l=50, r=50, t=50, b=50))
     fig.update_layout({'showlegend': False})
     fig.update_xaxes(showgrid=False, zeroline=False, visible=False)
     fig.update_yaxes(showgrid=False, zeroline=False, visible=False)
@@ -153,6 +155,3 @@ def visualize_directedgraph(graph: graph.Graph,
         fig.show()
     else:
         fig.write_image(output_file)
-
-
-
