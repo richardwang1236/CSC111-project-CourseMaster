@@ -87,6 +87,9 @@ class Graph:
         self._vertices = {}
 
     def get_vertices(self):
+        """
+        Returns all the vertices in the graph
+        """
         return self._vertices
 
     def add_vertex(self, item: Any) -> None:
@@ -140,6 +143,9 @@ class Graph:
             return self._vertices[item].get_connected_component(set())
 
     def get_exc(self, item: Any):
+        """
+        Return a graph that contains all the exclusions of the given course
+        """
         global a1
         a1 = []
         if item not in self._vertices:
@@ -223,6 +229,9 @@ class DirectdGraph:
             return
 
     def see_pre(self, item: Any):
+        """
+        Return all the prerequisites of the given course
+        """
         if item not in self._vertices:
             return 'Course Not Found'
         else:
