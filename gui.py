@@ -13,6 +13,7 @@ class MainWindow(tk.Tk):
     is a single course. The user can also visualize the exclusion relationship of the course by clicking the "vis_exc"
     button.
     """
+
     def __init__(self, height, width, undirected_graph, directedgraph, courses):
         """
         Initialize the main window of the GUI.
@@ -91,8 +92,9 @@ class MainWindow(tk.Tk):
                     br4 += 1
                 if '5' in br[0]:
                     br5 += 1
+        course_counts = len(course_utsg) + len(course_utsc) + len(course_utm)
         self.text_short = (
-            f"Among the three campus of the university of toronto, there are {len(course_utsg) + len(course_utsc) + len(course_utm)} courses in total. "
+            f"Among the three campus of the university of toronto, there are {course_counts} courses in total. "
             f"Science Courses: {science}. Humanities Courses: {humanities}, Social Science Courses: {social} "
             f"br1: {br1}, br2: {br2}, br3: {br3}, br4: {br4},br5:{br5}")
         self.text_long = f"long"
@@ -129,8 +131,8 @@ class MainWindow(tk.Tk):
             a = 1000
         else:
             a = 10000
-        visualization.visualize_graph(self.undirected_graph, max_vertices=a,title=f'exclusion relationship for all '
-                                                                                  f'courses ({a}) size')
+        visualization.visualize_graph(self.undirected_graph, max_vertices=a, title=f'exclusion relationship for all '
+                                                                                   f'courses ({a}) size')
 
     def search(self):
         """
@@ -190,9 +192,6 @@ class MainWindow(tk.Tk):
         show2 = tk.Label(click3, textvariable=self.text5, wraplength=400)
         show2.pack()
 
-    def detail(self):
-        pass
-
     def exc(self):
         """
         Visualize the exclusion relationship of the course based on the user's search result.
@@ -202,7 +201,7 @@ class MainWindow(tk.Tk):
             self.text5.set(text)
             g = self.undirected_graph.get_exc(self.text3.get())
             visualization.visualize_graph(g, max_vertices=500, item=self.text3.get(),
-                                          title=f'exclusion for {self.text3.get()}',layout='kamada_kawai_layout')
+                                          title=f'exclusion for {self.text3.get()}', layout='kamada_kawai_layout')
             text = 'Graph Loaded!'
             self.text5.set(text)
         else:
