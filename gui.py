@@ -3,7 +3,20 @@ import visualization
 
 
 class MainWindow(tk.Tk):
+    """
+    The main window of the GUI, which contains three buttons for three functions: visualization for exclusion,
+    statistics, and course search. The visualization for exclusion button will open a new window for the user to choose
+    the size of the graph to visualize. The statistics button will open a new window to display the statistics of the
+    courses, including the number of courses in each campus, the number of courses in each distribution, and the number
+    of courses in each breadth requirement. The course search button will open a new window for the user to search for a
+    course by its code, and the window will display the search result and the details of the course if the search result
+    is a single course. The user can also visualize the exclusion relationship of the course by clicking the "vis_exc"
+    button.
+    """
     def __init__(self, height, width, undirected_graph, directedgraph, courses):
+        """
+        Initialize the main window of the GUI.
+        """
         super().__init__()
         self.text5 = None
         self.text4 = None
@@ -29,6 +42,9 @@ class MainWindow(tk.Tk):
         self.button3.pack()
 
     def button_click(self):
+        """
+        Open a new window for the user to choose the size of the graph to visualize.
+        """
         new = tk.Tk()
         new.geometry('300x400')
         new.title('Visualization for exclusion')
@@ -41,6 +57,10 @@ class MainWindow(tk.Tk):
         b.pack()
 
     def button_click1(self):
+        """
+        Open a new window to display the statistics of the courses, including the number of courses in each campus, the
+        number of courses in each distribution, and the number of courses in each breadth requirement.
+        """
         new1 = tk.Tk()
         new1.geometry('500x500')
         new1.title('Statistics')
@@ -90,12 +110,19 @@ class MainWindow(tk.Tk):
         t.pack()
 
     def update_text(self):
+        """
+        Update the text displayed in the statistics window based on the user's selection.
+        """
         if self.selected_option1.get() == "short text":
             self.text.set(self.text_short)
         else:
             self.text.set(self.text_long)
 
     def vis1(self):
+        """
+        Visualize the exclusion relationship of all courses in the graph based on the user's selection of the size of
+        the graph to visualize.
+        """
         if self.selected_option.get() == 'small':
             a = 50
         elif self.selected_option.get() == 'medium':
@@ -106,6 +133,10 @@ class MainWindow(tk.Tk):
                                                                                   f'courses ({a}) size')
 
     def search(self):
+        """
+        Search for a course by its code and display the search result and the details of the course if the search result
+        is a single course.
+        """
         query = self.entry.get().upper()
         result = [c for c in self.courses if query in c]
 
@@ -133,6 +164,11 @@ class MainWindow(tk.Tk):
         # end of detail
 
     def button_click3(self):
+        """
+        Open a new window for the user to search for a course by its code and display the search result and the details
+        of the course if the search result is a single course. The user can also visualize the exclusion relationship of
+        the course by clicking the "vis_exc" button.
+        """
         click3 = tk.Tk()
         click3.geometry('500x500')
         click3.title('Course Search')
@@ -158,6 +194,9 @@ class MainWindow(tk.Tk):
         pass
 
     def exc(self):
+        """
+        Visualize the exclusion relationship of the course based on the user's search result.
+        """
         if len(self.text3.get()) == 8:
             text = 'Loading Graph...'
             self.text5.set(text)
