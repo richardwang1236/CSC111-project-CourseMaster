@@ -6,6 +6,9 @@ import tkinter as tk
 
 
 def run_spider():
+    """
+    Run the scrappy spider to crawl the data from the website
+    """
     subprocess.run(['scrapy', 'crawl', 'courses', '-O', 'courses1.json', '--nolog'], capture_output=True,
                    cwd='./course')
 
@@ -14,6 +17,9 @@ mode = 1
 
 
 def read_file(file_name: str, directed: graph.DirectdGraph, undirected: graph.Graph) -> dict:
+    """
+    Read the courses.json file and return a dictionary of courses
+    """
     with open(file_name, 'r', encoding='utf-8') as f:
         data = json.load(f)
     coursess = {}
@@ -33,6 +39,9 @@ def read_file(file_name: str, directed: graph.DirectdGraph, undirected: graph.Gr
 
 
 def transfer_to_graphs(coursess: dict[str:graph.Course], directed: graph.DirectdGraph, undirected: graph.Graph):
+    """
+    Transfer the courses to the directed and undirected graphs
+    """
     for c in coursess.values():
         code = c.code
         pre = c.pre
@@ -45,18 +54,24 @@ def transfer_to_graphs(coursess: dict[str:graph.Course], directed: graph.Directd
 
 
 def initialization(mode=0):
-    directed_graph = graph.DirectdGraph()
-    undirected_graph = graph.Graph()
+    """
+    Initialize the program by reading the data from the file and transfer the data to the graphs
+    """
+    d_graph = graph.DirectdGraph()
+    u_graph = graph.Graph()
     if mode == 0:
         run_spider()
-        courses = read_file('./course/courses1.json', directed_graph, undirected_graph)
+        all_courses = read_file('./course/courses1.json', d_graph, u_graph)
     else:
-        courses = read_file('./course/courses.json', directed_graph, undirected_graph)
-    course = transfer_to_graphs(courses, directed_graph, undirected_graph)
-    return directed_graph, undirected_graph, course
+        all_courses = read_file('./course/courses.json', d_graph, u_graph)
+    course = transfer_to_graphs(all_courses, d_graph, u_graph)
+    return d_graph, u_graph, course
 
 
 def start():
+    """
+    Sets the mode of the program by asking the user to choose between using the default dataset or updating the dataset.
+    """
     global mode
     mode_set = tk.Tk()
     mode_set.title("CourseMaster")
@@ -67,6 +82,9 @@ def start():
         tk.Radiobutton(mode_set, text=option, variable=selected_option, value=option).pack(anchor=tk.W)
 
     def c():
+        """
+        Set the mode of the program
+        """
         global mode
         if selected_option.get() == 'use the default dataset':
             mode = 1
