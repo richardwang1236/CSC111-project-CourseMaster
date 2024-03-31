@@ -14,7 +14,7 @@ class MainWindow(tk.Tk):
     button.
     """
 
-    def __init__(self, height, width, undirected_graph, directedgraph, courses):
+    def __init__(self, height, width, directedgraph, courses):
         """
         Initialize the main window of the GUI.
         """
@@ -30,7 +30,6 @@ class MainWindow(tk.Tk):
         self.selected_option = None
         self.courses = courses
         self.directedgraph = directedgraph
-        self.undirected_graph = undirected_graph
         self.geometry(f'{height}x{width}')
         self.label = tk.Label(self, text='Course Master', font=("Helvetica", 50))
         self.label.pack()
@@ -65,9 +64,9 @@ class MainWindow(tk.Tk):
         new1 = tk.Tk()
         new1.geometry('500x500')
         new1.title('Statistics')
-        course_utsg = [c for c in self.undirected_graph.get_vertices().values() if c.item[-1] == '1']
-        course_utsc = [c for c in self.undirected_graph.get_vertices().values() if c.item[-1] == '3']
-        course_utm = [c for c in self.undirected_graph.get_vertices().values() if c.item[-1] == '5']
+        course_utsg = [c for c in self.directedgraph.get_vertices().values() if c.item[-1] == '1']
+        course_utsc = [c for c in self.directedgraph.get_vertices().values() if c.item[-1] == '3']
+        course_utm = [c for c in self.directedgraph.get_vertices().values() if c.item[-1] == '5']
         brs = [c.br for c in self.courses.values()]
         distribution = [c.distribution for c in self.courses.values()]
         science, humanities, social = 0, 0, 0
@@ -131,7 +130,7 @@ class MainWindow(tk.Tk):
             a = 1000
         else:
             a = 10000
-        visualization.visualize_graph(self.undirected_graph, max_vertices=a, title=f'exclusion relationship for all '
+        visualization.visualize_graph(self.directedgraph, max_vertices=a, title=f'exclusion relationship for all '
                                                                                    f'courses ({a}) size')
 
     def search(self):
@@ -199,7 +198,7 @@ class MainWindow(tk.Tk):
         if len(self.text3.get()) == 8:
             text = 'Loading Graph...'
             self.text5.set(text)
-            g = self.undirected_graph.get_exc(self.text3.get())
+            g = self.directedgraph.get_exc(self.text3.get())
             visualization.visualize_graph(g, max_vertices=500, item=self.text3.get(),
                                           title=f'exclusion for {self.text3.get()}', layout='kamada_kawai_layout')
             text = 'Graph Loaded!'

@@ -1,47 +1,92 @@
 from __future__ import annotations
 from typing import Any
+from dataclasses import field
+import heapq
+import copy
 import networkx as nx
 
-a1 = []
+
+class Course:
+    """A course in Uoft"""
+
+    code: str
+    title: str
+    introduction: str
+    br: list
+    pre: list
+    exc: list
+    distribution: list
+
+    def __init__(
+        self,
+        code: str,
+        title: str,
+        introduction: str,
+        br: list,
+        pre: list,
+        exc: list,
+        distribution: list,
+    ):
+        self.code = code
+        self.title = title
+        self.introduction = introduction
+        self.br = br
+        self.pre = pre
+        self.exc = exc
+        self.distribution = distribution
+
+    def __repr__(self) -> str:
+        """
+        Debug
+        """
+        return f"{self.code}"
 
 
 class _Vertex:
-    """A vertex in a graph.
+    """A vertex in a graph."""
 
-    Instance Attributes:
-        - item: The data stored in this vertex.
-        - neighbours: The vertices that are adjacent to this vertex.
+    item: Any = field(compare=True)
+    after: set[_Vertex]
+    prev: set[_Vertex]
+    rating: float
 
-    Representation Invariants:
-        - self not in self.neighbours
-        - all(self in u.neighbours for u in self.neighbours)
-    """
-    item: Any
-    neighbours: set[_Vertex]
-
-    def __init__(self, item: Any, neighbours: set[_Vertex]) -> None:
+    def __init__(
+        self,
+        item: Any,
+        after: set[_Vertex],
+        prev: set[_Vertex],
+        rating: float = 0,
+    ) -> None:
         """Initialize a new vertex with the given item and neighbours."""
         self.item = item
-        self.neighbours = neighbours
+        self.after = after
+        self.prev = prev
+        self.rating = rating
 
-    def check_connected(self, target_item: Any, visited: set[_Vertex]) -> bool:
-        """Return whether this vertex is connected to a vertex corresponding to the target_item,
-        WITHOUT using any of the vertices in visited.
+    def __eq__(self, __value: _Vertex) -> bool:
+        """Reload operator =="""
+        return self.item == __value.item
 
-        Preconditions:
-            - self not in visited
+    def __gt__(self, __value: _Vertex) -> bool:
+        """Reload operator >"""
+        return self.item > __value.item
+
+    def __lt__(self, __value: _Vertex) -> bool:
+        """Reload operator <"""
+        return self.item < __value.item
+
+    def __hash__(self):
         """
-        if self.item == target_item:
-            # Our base case: the target_item is the current vertex
-            return True
-        else:
-            visited.add(self)  # Add self to the set of visited vertices
-            for u in self.neighbours:
-                if u not in visited:  # Only recurse on vertices that haven't been visited
-                    if u.check_connected(target_item, visited):
-                        return True
+        Reload hash function\\
+        Since the default hash function goes away ;sad;
+        """
+        return hash(str(self.item))
 
-            return False
+    def __repr__(self) -> str:
+        """
+        Debug
+        """
+        return f"V[{self.item}]"
 
     def get_connected_component(self, visited: set[_Vertex]):
         """Return a set of all ITEMS connected to self by a path that does not use
@@ -61,8 +106,8 @@ class _Vertex:
         global a1
         visited.add(self)
         a = {self.item}
-        for u in self.neighbours:
-            path=(self.item, u.item)
+        for u in self.after:
+            path = (self.item, u.item)
             # if u not in visited:
             if path not in a1:
                 a1.append(path)
@@ -76,6 +121,7 @@ class Graph:
     Representation Invariants:
         - all(item == self._vertices[item].item for item in self._vertices)
     """
+
     # Private Instance Attributes:
     #     - _vertices:
     #         A collection of the vertices contained in this graph.
@@ -112,8 +158,8 @@ class Graph:
             v2 = self._vertices[item2]
 
             # Add the new edge
-            v1.neighbours.add(v2)
-            v2.neighbours.add(v1)
+            v1.after.add(v2)
+            v2.after.add(v1)
         else:
             # We didn't find an existing vertex for both items.
             # raise ValueError
@@ -149,7 +195,7 @@ class Graph:
         global a1
         a1 = []
         if item not in self._vertices:
-            return 'Course not found'
+            return "Course not found"
         else:
             connected = self.get_connected_component(item)
             g = Graph()
@@ -174,7 +220,7 @@ class Graph:
         for v in self._vertices.values():
             graph_nx.add_node(v.item, kind=v.item)
 
-            for u in v.neighbours:
+            for u in v.after:
                 if graph_nx.number_of_nodes() < max_vertices:
                     graph_nx.add_node(u.item, kind=u.item)
 
@@ -187,12 +233,13 @@ class Graph:
         return graph_nx
 
 
-class DirectdGraph:
-    """A directed graph.
+class DirectedGraph:
+    """A graph.
 
     Representation Invariants:
         - all(item == self._vertices[item].item for item in self._vertices)
     """
+
     # Private Instance Attributes:
     #     - _vertices:
     #         A collection of the vertices contained in this graph.
@@ -207,12 +254,15 @@ class DirectdGraph:
         """Add a vertex with the given item to this graph.
 
         The new vertex is not adjacent to any other vertices.
-        """
-        self._vertices[item] = _Vertex(item, set())
 
-    def add_arc(self, item1: Any, item2: Any) -> None:
-        """Add an arc between the two vertices with the given items in this graph.
-        which must be item1 ---> item2 so item2 has a neighbor of item1 but item1 does not have neighbor of item2
+        Preconditions:
+            - item not in self._vertices
+        """
+        if item not in self._vertices:
+            self._vertices[item] = _Vertex(item, set(), set())
+
+    def add_edge(self, item1: Any, item2: Any) -> None:
+        """Add an edge between the two vertices with the given items in this graph(from item1 to item2).
 
         Raise a ValueError if item1 or item2 do not appear as vertices in this graph.
 
@@ -222,20 +272,171 @@ class DirectdGraph:
         if item1 in self._vertices and item2 in self._vertices:
             v1 = self._vertices[item1]
             v2 = self._vertices[item2]
-            v2.neighbours.add(v1)
+
+            # Add the new edge
+            v1.after.add(v2)
+            v2.prev.add(v1)
         else:
             # We didn't find an existing vertex for both items.
-            # raise ValueError
+            raise ValueError
+
+    def get_vertices(self) -> dict[Any, _Vertex]:
+        """
+        Returns all the vertices in the graph
+        """
+        return self._vertices
+
+    def minimal_graph(self, start: list[Any], end: list[Any]) -> list[_Vertex]:
+        """
+        Return a minimal list of vertices in self such that there is a path between each pair of nodes in start and end.
+        """
+        new_vertices = self.dijkstra(start, end)
+
+        # Build a new graph
+        new_graph = DirectedGraph()
+        for i in new_vertices:
+            for j in i:
+                for k in range(len(j)):
+                    if j[k] not in new_graph.get_vertices():
+                        new_graph.add_vertex(j[k].item)
+                    if j[k].item not in start and k != 0:
+                        new_graph.add_edge(j[k - 1].item, j[k].item)
+
+        # Calculate Dominators
+        all_v = copy.deepcopy(new_graph.get_vertices())
+        dom = new_graph.compute_dominators(self._vertices[start[0]])
+        semians = set()
+        for i in dom:
+            dom[i].discard(i)
+            semians = semians.union(dom[i])
+
+        # Remove non-Dominators
+        for v in all_v:
+            vertex = all_v[v]
+            if vertex not in semians:
+                for i in vertex.prev:
+                    i.after.discard(vertex)
+                for i in vertex.after:
+                    i.prev.discard(vertex)
+                del new_graph._vertices[v]
+
+        # Remove start node
+        del new_graph._vertices[start[0]]
+
+        return new_graph.get_vertices()
+
+    # Dom & Sub D=
+    def compute_dominators(self, start_node: _Vertex) -> dict[_Vertex, set[_Vertex]]:
+        dominators = {
+            node: {node for node in self._vertices.values()}
+            for node in self._vertices.values()
+        }  # Initialize all nodes as dominators
+        dominators[start_node] = {
+            start_node
+        }  # The dominator of the start node is itself
+
+        changes = True
+        while changes:
+            changes = False
+            for v in self._vertices.values():
+                if v != start_node:
+                    pred_doms = [dominators[pred] for pred in v.prev]
+                    new_dom = {v} | (pred_doms[0] if pred_doms else set())
+                    for pred_dom in pred_doms[1:]:
+                        new_dom &= pred_dom
+                    if dominators[v] != new_dom:
+                        dominators[v] = new_dom
+                        changes = True
+
+        return dominators
+
+    def dijkstra(self, start: list[Any], end: list[Any]) -> list[list[list[_Vertex]]]:
+        """
+        Finding the shortest path with the highest rating connected the start vertices and the end vertices
+        """
+        # Initialization
+        distances: dict[_Vertex, float | int] = {
+            self._vertices[v]: float("inf") for v in self._vertices
+        }
+        predecessors: dict[_Vertex, list[_Vertex]] = {
+            self._vertices[v]: [] for v in self._vertices
+        }
+
+        # Generate a really big start vertex XD
+        start_vertex: _Vertex = _Vertex(start[0], set(), set())
+        for i in start:
+            if i in self._vertices:
+                start_vertex.after = start_vertex.after.union(self._vertices[i].after)
+            else:
+                raise ValueError("Do not find the start vertex!")
+        self._vertices[start[0]] = start_vertex
+
+        ans: list[list[list[_Vertex]]] = []
+
+        # Main body
+        for item in end:
+
+            if item not in self._vertices:
+                raise ValueError("Do not find the end vertex!")
+
+            # Find the shortest Path(Dijkstra)
+            distances[start_vertex] = 0
+            visited: set[_Vertex] = set()
+            heap: list[tuple[int | float, _Vertex]] = [(0, start_vertex)]
+            while heap:
+                current_node: _Vertex
+                (current_distance, current_node) = heapq.heappop(heap)
+                if current_node in visited:
+                    continue
+                visited.add(current_node)
+                for neighbor in current_node.after:
+                    distance = current_distance + 1
+                    if distance < distances[neighbor]:
+                        distances[neighbor] = distance
+                        predecessors[neighbor] = [current_node]  # update predecessors
+                        heapq.heappush(heap, (distance, neighbor))
+                    elif distance == distances[neighbor]:
+                        predecessors[neighbor].append(current_node)  # add a new path
+
+            # Reconstruct Path
+            all_paths: list[list[_Vertex]] = []
+            current = self._vertices[item]
+            self.construct_paths(
+                predecessors, start_vertex, current, [current], all_paths
+            )
+            ans.append([list(reversed(i)) for i in all_paths])
+
+        return ans
+
+    def construct_paths(
+        self,
+        predecessors: dict,
+        start: _Vertex,
+        end: _Vertex,
+        current_path: list[_Vertex],
+        all_paths: list[list[_Vertex]],
+    ) -> None:
+        """
+        Helper func for reconstructing paths
+        """
+        if start == end:
+            all_paths.append(list(current_path))
             return
+        for predecessor in predecessors[end]:
+            current_path.append(predecessor)
+            self.construct_paths(
+                predecessors, start, predecessor, current_path, all_paths
+            )
+            current_path.pop()
 
     def see_pre(self, item: Any):
         """
         Return all the prerequisites of the given course
         """
         if item not in self._vertices:
-            return 'Course Not Found'
+            return "Course Not Found"
         else:
-            return [x.item for x in self._vertices[item].neighbours]
+            return [x.item for x in self._vertices[item].prev]
 
     def to_networkx(self, max_vertices: int = 50000) -> nx.DiGraph:
         """Convert this graph into a networkx Graph.
@@ -249,7 +450,7 @@ class DirectdGraph:
         for v in self._vertices.values():
             graph_nx.add_node(v.item, kind=v.item[-1])
 
-            for u in v.neighbours:
+            for u in v.after:
                 if graph_nx.number_of_nodes() < max_vertices:
                     graph_nx.add_node(u.item, kind=u.item[-1])
 
@@ -260,23 +461,3 @@ class DirectdGraph:
                 break
 
         return graph_nx
-
-
-class Course:
-    """ A course in Uoft"""
-    code: str
-    title: str
-    introduction: str
-    br: list
-    pre: list
-    exc: list
-    distribution: list
-
-    def __init__(self, code: str, title: str, introduction: str, br: list, pre: list, exc: list, distribution: list):
-        self.code = code
-        self.title = title
-        self.introduction = introduction
-        self.br = br
-        self.pre = pre
-        self.exc = exc
-        self.distribution = distribution
