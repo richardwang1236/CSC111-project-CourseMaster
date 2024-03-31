@@ -345,7 +345,8 @@ class MainWindow(tk.Tk):
             courses = [c for c in self.course if c in course_copy]
             for course in courses:
                 a = self.directedgraph.get_vertices()[course].neighbours
-                if len(a) == 0 or (k >= 2 and any(x.item in ard[k - 1] for x in a)):
+                b = (k >= 2 and (not any(x.item in ar for x in a) and (any(x.item in ard[k - 1] for x in a))))
+                if len(a) == 0 or b:
                     ar.append(course)
                     course_copy.remove(course)
             ard[k] = ar
