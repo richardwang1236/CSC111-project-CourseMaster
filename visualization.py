@@ -1,7 +1,11 @@
+"""
+These are the modules we will be using for visualization.py
+"""
+from typing import Any
 import networkx as nx
 from plotly.graph_objs import Scatter, Figure
 import graph
-import plotly.graph_objects as go
+
 
 COLOUR_SCHEME = [
     '#2E91E5', '#E15F99', '#1CA71C', '#FB0D0D', '#DA16FF', '#222A2A', '#B68100',
@@ -21,7 +25,7 @@ red_COLOUR = 'rgb(220,20,60)'
 def visualize_graph(gp: graph.Graph,
                     layout: str = 'spring_layout',
                     max_vertices: int = 50000,
-                    output_file: str = '', item=None, title='') -> None:
+                    item: Any = None, title: str = '') -> None:
     """Use plotly and networkx to visualize the given graph.
 
     Optional arguments:
@@ -58,18 +62,18 @@ def visualize_graph(gp: graph.Graph,
                      y=y_edges,
                      mode='lines',
                      name='edges',
-                     line=dict(color=LINE_COLOUR, width=3),
+                     line={"color": LINE_COLOUR, "width": 3},
                      hoverinfo='none',
                      )
     trace4 = Scatter(x=x_values,
                      y=y_values,
                      mode='markers',
                      name='nodes',
-                     marker=dict(symbol='circle-dot',
-                                 size=10 - max_vertices // 2000,
-                                 color=colours,
-                                 line=dict(color=VERTEX_BORDER_COLOUR, width=0.5)
-                                 ),
+                     marker={"symbol": 'circle-dot',
+                             "size": 10 - max_vertices // 2000,
+                             "color": colours,
+                             "line": {"color": VERTEX_BORDER_COLOUR, "width": 0.5}
+                             },
                      text=labels,
                      hovertemplate='%{text}',
                      hoverlabel={'namelength': 0}
@@ -77,12 +81,19 @@ def visualize_graph(gp: graph.Graph,
 
     data1 = [trace3, trace4]
     fig = Figure(data=data1)
-    fig.update_layout(title_text=title, showlegend=False, margin=dict(l=50, r=50, t=50, b=50))
+    fig.update_layout(title_text=title, showlegend=False, margin={"l": 50, "r": 50, "t": 50, "b": 50})
     fig.update_layout({'showlegend': False})
     fig.update_xaxes(showgrid=False, zeroline=False, visible=False)
     fig.update_yaxes(showgrid=False, zeroline=False, visible=False)
 
-    if output_file == '':
-        fig.show()
-    else:
-        fig.write_image(output_file)
+    fig.show()
+
+
+if __name__ == '__main__':
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': [],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })

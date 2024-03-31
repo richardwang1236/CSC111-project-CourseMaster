@@ -1,5 +1,9 @@
+"""
+These are the modules we will be using for gui.py
+"""
 import tkinter as tk
 import visualization
+import graph
 
 
 class MainWindow(tk.Tk):
@@ -13,17 +17,43 @@ class MainWindow(tk.Tk):
     is a single course. The user can also visualize the exclusion relationship of the course by clicking the "vis_exc"
     button.
     """
+    courser: tk.StringVar
+    entry1: tk.Entry
+    course: list[str]
+    text5: tk.StringVar
+    texta: tk.StringVar
+    text3: tk.StringVar
+    text4: tk.StringVar
+    entry: tk.Entry
+    text: tk.StringVar
+    selected_option1: tk.StringVar
+    text_long: str
+    text_short: str
+    selected_option: tk.StringVar
+    courses: dict[str:graph.Course]
+    directedgraph: graph.DirectdGraph
+    undirected_graph: graph.Graph
+    label: tk.Label
+    button: tk.Button
+    button1: tk.Button
+    button3: tk.Button
+    button4: tk.Button
+    textb: tk.StringVar
+    course22: tk.StringVar
 
-    def __init__(self, height, width, undirected_graph, directedgraph, courses):
+    def __init__(self, height_and_width: int, undirected_graph: graph.Graph, directedgraph: graph.DirectdGraph,
+                 courses: dict[str:graph.Course]) -> None:
         """
         Initialize the main window of the GUI.
         """
         super().__init__()
         self.courser = None
+        self.course22 = None
         self.entry1 = None
         self.course = []
         self.text5 = None
         self.texta = None
+        self.textb = None
         self.text3 = None
         self.text4 = None
         self.entry = None
@@ -35,7 +65,8 @@ class MainWindow(tk.Tk):
         self.courses = courses
         self.directedgraph = directedgraph
         self.undirected_graph = undirected_graph
-        self.geometry(f'{height}x{width}')
+
+        self.geometry(f'{height_and_width}x{height_and_width}')
         self.label = tk.Label(self, text='Course Master', font=("Helvetica", 50))
         self.label.pack()
         self.title('CourseMaster')
@@ -60,7 +91,7 @@ class MainWindow(tk.Tk):
         self.button3.pack()
         self.button4.pack()
 
-    def button_click(self):
+    def button_click(self) -> None:
         """
         Open a new window for the user to choose the size of the graph to visualize.
         """
@@ -75,7 +106,7 @@ class MainWindow(tk.Tk):
         b = tk.Button(new, text='Visualize', command=self.vis1)
         b.pack()
 
-    def button_click1(self):
+    def button_click1(self) -> None:
         """
         Open a new window to display the statistics of the courses, including the number of courses in each campus, the
         number of courses in each distribution, and the number of courses in each breadth requirement.
@@ -88,34 +119,33 @@ class MainWindow(tk.Tk):
         course_utm = [c for c in self.undirected_graph.get_vertices().values() if c.item[-1] == '5']
         brs = [c.br for c in self.courses.values()]
         distribution = [c.distribution for c in self.courses.values()]
-        science, humanities, social = 0, 0, 0
-        br1, br2, br3, br4, br5 = 0, 0, 0, 0, 0
+        sci_hum_soc = [0, 0, 0]
+        br12345 = [0, 0, 0, 0, 0]
         for d in distribution:
-            if d:
-                if 'Science' in d[0]:
-                    science += 1
-                if 'Humanities' in d[0]:
-                    humanities += 1
-                if 'Social Science' in d[0]:
-                    social += 1
+            if d and 'Science' in d[0]:
+                sci_hum_soc[0] += 1
+            if d and 'Humanities' in d[0]:
+                sci_hum_soc[1] += 1
+            if d and 'Social Science' in d[0]:
+                sci_hum_soc[2] += 1
         for br in brs:
-            if br:
-                if '1' in br[0]:
-                    br1 += 1
-                if '2' in br[0]:
-                    br2 += 1
-                if '3' in br[0]:
-                    br3 += 1
-                if '4' in br[0]:
-                    br4 += 1
-                if '5' in br[0]:
-                    br5 += 1
-        course_counts = len(course_utsg) + len(course_utsc) + len(course_utm)
+            if br and '1' in br[0]:
+                br12345[0] += 1
+            if br and '2' in br[0]:
+                br12345[1] += 1
+            if br and '3' in br[0]:
+                br12345[2] += 1
+            if br and '4' in br[0]:
+                br12345[3] += 1
+            if br and '5' in br[0]:
+                br12345[4] += 1
         self.text_short = (
-            f"Among the three campus of the university of toronto, there are {course_counts} courses in total. "
-            f"Science Courses: {science}. Humanities Courses: {humanities}, Social Science Courses: {social} "
-            f"br1: {br1}, br2: {br2}, br3: {br3}, br4: {br4},br5:{br5}")
-        self.text_long = f"long"
+            f"Among the three campus of the university of toronto, there are "
+            f"{len(course_utsg) + len(course_utsc) + len(course_utm)} courses in total."
+            f"Science Courses: {sci_hum_soc[0]}. Humanities Courses: {sci_hum_soc[1]}, Social Science Courses: "
+            f"{sci_hum_soc[2]} br1: {br12345[0]}, br2: {br12345[1]}, br3: {br12345[2]}, br4: {br12345[3]}, "
+            f"br5:{br12345[4]}")
+        self.text_long = "long"  # TODO
         options = ["short text", "long text"]
 
         self.selected_option1 = tk.StringVar(new1)
@@ -126,10 +156,9 @@ class MainWindow(tk.Tk):
         self.text = tk.StringVar(new1)
         self.text.set(self.text_short)
 
-        t = tk.Label(new1, textvariable=self.text, wraplength=400, font=("Helvetica", 15))
-        t.pack()
+        tk.Label(new1, textvariable=self.text, wraplength=400, font=("Helvetica", 15)).pack()
 
-    def update_text(self):
+    def update_text(self) -> None:
         """
         Update the text displayed in the statistics window based on the user's selection.
         """
@@ -138,7 +167,7 @@ class MainWindow(tk.Tk):
         else:
             self.text.set(self.text_long)
 
-    def vis1(self):
+    def vis1(self) -> None:
         """
         Visualize the exclusion relationship of all courses in the graph based on the user's selection of the size of
         the graph to visualize.
@@ -152,7 +181,7 @@ class MainWindow(tk.Tk):
         visualization.visualize_graph(self.undirected_graph, max_vertices=a, title=f'exclusion relationship for all '
                                                                                    f'courses ({a}) size')
 
-    def search(self):
+    def search(self) -> None:
         """
         Search for a course by its code and display the search result and the details of the course if the search result
         is a single course.
@@ -169,7 +198,6 @@ class MainWindow(tk.Tk):
         else:
             self.text3.set('Be more specific！')
 
-        # beginning of detail
         if len(self.text3.get()) == 8:
             course = self.courses[self.text3.get()]
             br = course.br
@@ -181,9 +209,8 @@ class MainWindow(tk.Tk):
         else:
             text = 'Please narrow down your search to view details!'
             self.text4.set(text)
-        # end of detail
 
-    def button_click3(self):
+    def button_click3(self) -> None:
         """
         Open a new window for the user to search for a course by its code and display the search result and the details
         of the course if the search result is a single course. The user can also visualize the exclusion relationship of
@@ -210,7 +237,7 @@ class MainWindow(tk.Tk):
         show2 = tk.Label(click3, textvariable=self.text5, wraplength=400)
         show2.pack()
 
-    def button_click4(self):
+    def button_click4(self) -> None:
         """
         Open a new window for the user to search for a course by its code and display the search result and the details
         of the course if the search result is a single course. The user can also visualize the exclusion relationship of
@@ -246,7 +273,7 @@ class MainWindow(tk.Tk):
         t8 = tk.Label(click4, textvariable=self.courser, wraplength=500)
         t8.pack()
 
-    def exc(self):
+    def exc(self) -> None:
         """
         Visualize the exclusion relationship of the course based on the user's search result.
         """
@@ -262,7 +289,7 @@ class MainWindow(tk.Tk):
             text = 'Narrow your search to view exclusions!'
             self.text5.set(text)
 
-    def add(self):
+    def add(self) -> None:
         """
         Search for a course by its code and display the search result and the details of the course if the search result
         is a single course.
@@ -278,7 +305,6 @@ class MainWindow(tk.Tk):
         else:
             self.texta.set('Be more specific')
 
-        # beginning of detail
         if len(self.texta.get()) == 17:
             self.courser.set('')
             self.textb.set('')
@@ -289,7 +315,7 @@ class MainWindow(tk.Tk):
             text = 'Please narrow down your search to only one specific course to add course to the list'
             self.textb.set(text)
 
-    def dele(self):
+    def dele(self) -> None:
         """
         Search for a course by its code and display the search result and the details of the course if the search result
         is a single course.
@@ -302,7 +328,7 @@ class MainWindow(tk.Tk):
         else:
             self.textb.set('No course in the list')
 
-    def arrange(self):
+    def arrange(self) -> None:
         """
         Search for a course by its code and display the search result and the details of the course if the search result
         is a single course.
@@ -312,11 +338,11 @@ class MainWindow(tk.Tk):
         ard = {}
         course_copy = self.course[:]
         k = 1
-        while len(course_copy) > 0:
+        while len(course_copy) > 0:  # TODO
             ar = []
             for course in self.course:
                 if course in course_copy:
-                    a = self.directedgraph._vertices[course].neighbours
+                    a = self.directedgraph.get_vertices()[course].neighbours
                     if len(a) == 0:
                         ar.append(course)
                         course_copy.remove(course)
@@ -325,15 +351,28 @@ class MainWindow(tk.Tk):
                         course_copy.remove(course)
             ard[k] = ar
             if not ar:
-                text = ('can not arrange the following courses due to lack of prerequisite ' + f'{course_copy}')
+                text = f'can not arrange the following courses due to lack of prerequisite {course_copy}'
                 self.courser.set(text)
                 return
             k += 1
         for i in ard:
-            text += f'step{i}: take course{ard[i]}; \n'
+            text += f'step{i}: take course {ard[i][0]}; \n'
             self.courser.set(text)
 
-    def example(self):
+    def example(self) -> None:
+        """
+        Add an example course list to the course list.
+        """
         self.course = ['CSC110Y1', 'CSC111H1', 'CSC207H1', 'CSC236H1', 'CSC209H1', 'CSC258H1', 'CSC263H1', 'CSC336H1']
         self.course22.set(' '.join(self.course))
         self.arrange()
+
+
+if __name__ == '__main__':
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': [],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })

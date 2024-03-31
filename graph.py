@@ -1,8 +1,11 @@
+"""
+These are the modules we will be using for graph.py
+"""
 from __future__ import annotations
 from typing import Any
 import networkx as nx
 
-a1 = []
+# a1 = []
 
 
 class _Vertex:
@@ -43,7 +46,7 @@ class _Vertex:
 
             return False
 
-    def get_connected_component(self, visited: set[_Vertex]):
+    def get_connected_component(self, visited: set[_Vertex], paths: list[tuple[Any, Any]]) -> set[Any]:
         """Return a set of all ITEMS connected to self by a path that does not use
         any vertices in visited.
 
@@ -58,16 +61,24 @@ class _Vertex:
                when all vertices in self.neighbours are already in visited.
             3. Use a loop accumulator to store a set of the vertices connected to self.
         """
-        global a1
         visited.add(self)
         a = {self.item}
         for u in self.neighbours:
             path = (self.item, u.item)
-            # if u not in visited:
-            if path not in a1:
-                a1.append(path)
-                a = a.union(u.get_connected_component(visited))
+            if path not in paths:
+                paths.append(path)
+                a = a.union(u.get_connected_component(visited, paths))
         return a
+        # global a1
+        # visited.add(self)
+        # a = {self.item}
+        # for u in self.neighbours:
+        #     path = (self.item, u.item)
+        #     # if u not in visited:
+        #     if path not in a1:
+        #         a1.append(path)
+        #         a = a.union(u.get_connected_component(visited))
+        # return a
 
 
 class Graph:
@@ -86,7 +97,7 @@ class Graph:
         """Initialize an empty graph (no vertices or edges)."""
         self._vertices = {}
 
-    def get_vertices(self):
+    def get_vertices(self) -> dict[Any, _Vertex]:
         """
         Returns all the vertices in the graph
         """
@@ -119,7 +130,7 @@ class Graph:
             # raise ValueError
             return
 
-    def get_connected_component(self, item: Any):
+    def get_connected_component(self, item: Any) -> set[Any]:
         """Return a set of all ITEMS connected to the given item in this graph.
 
         Raise a ValueError if item does not appear as a vertex in this graph.
@@ -140,27 +151,38 @@ class Graph:
         if item not in self._vertices:
             raise ValueError
         else:
-            return self._vertices[item].get_connected_component(set())
+            return self._vertices[item].get_connected_component(set(), [])  # edited
 
-    def get_exc(self, item: Any):
+    def get_exc(self, item: Any) -> Graph:
         """
         Return a graph that contains all the exclusions of the given course
         """
-        global a1
-        a1 = []
+        paths = []
         if item not in self._vertices:
             return 'Course not found'
         else:
-            connected = self.get_connected_component(item)
+            connected = self._vertices[item].get_connected_component(set(), paths)
             g = Graph()
             for v in connected:
                 g.add_vertex(v)
-            for v in a1:
+            for v in paths:
                 g.add_edge(v[0], v[1])
-            # for x in self._vertices[item].neighbours:
-            #     g.add_edge(item, x.item)
-
             return g
+        # global a1
+        # a1 = []
+        # if item not in self._vertices:
+        #     return 'Course not found'
+        # else:
+        #     connected = self.get_connected_component(item)
+        #     g = Graph()
+        #     for v in connected:
+        #         g.add_vertex(v)
+        #     for v in a1:
+        #         g.add_edge(v[0], v[1])
+        #     # for x in self._vertices[item].neighbours:
+        #     #     g.add_edge(item, x.item)
+        #
+        #     return g
 
     def to_networkx(self, max_vertices: int = 50000) -> nx.Graph:
         """Convert this graph into a networkx Graph.
@@ -228,7 +250,7 @@ class DirectdGraph:
             # raise ValueError
             return
 
-    def see_pre(self, item: Any):
+    def see_pre(self, item: Any) -> list:
         """
         Return all the prerequisites of the given course
         """
@@ -261,6 +283,12 @@ class DirectdGraph:
 
         return graph_nx
 
+    def get_vertices(self) -> dict[Any, _Vertex]:
+        """
+        Return all the vertices in the graph
+        """
+        return self._vertices
+
 
 class Course:
     """ A course in Uoft"""
@@ -272,7 +300,11 @@ class Course:
     exc: list
     distribution: list
 
-    def __init__(self, code: str, title: str, introduction: str, br: list, pre: list, exc: list, distribution: list):
+    def __init__(self, code: str, title: str, introduction: str, br: list, pre: list, exc: list,
+                 distribution: list) -> None:
+        """
+        Initialize a course with its code, title, introduction, br, pre, exc, distribution
+        """
         self.code = code
         self.title = title
         self.introduction = introduction
@@ -280,3 +312,13 @@ class Course:
         self.pre = pre
         self.exc = exc
         self.distribution = distribution
+
+
+if __name__ == '__main__':
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': [],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
