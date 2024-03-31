@@ -141,11 +141,13 @@ class MainWindow(tk.Tk):
                 br12345[4] += 1
         self.text_short = (
             f"Among the three campus of the university of toronto, there are "
-            f"{len(course_utsg) + len(course_utsc) + len(course_utm)} courses in total."
-            f"Science Courses: {sci_hum_soc[0]}. Humanities Courses: {sci_hum_soc[1]}, Social Science Courses: "
-            f"{sci_hum_soc[2]} br1: {br12345[0]}, br2: {br12345[1]}, br3: {br12345[2]}, br4: {br12345[3]}, "
+            f"{len(course_utsg) + len(course_utsc) + len(course_utm)} courses in total.")
+        self.text_long = (
+            f"There are {len(course_utsg)} courses in UTSG, {len(course_utsc)} in UTSC and {len(course_utm)} in UTM.\n"
+            f"Among the three campus of the university of toronto, there are:\n\n "
+            f"Science Courses: {sci_hum_soc[0]}\n Humanities Courses: {sci_hum_soc[1]}\n Social Science Courses: "
+            f"{sci_hum_soc[2]}\n\n\n\n br1: {br12345[0]}\n br2: {br12345[1]}\n br3: {br12345[2]}\n br4: {br12345[3]}\n "
             f"br5:{br12345[4]}")
-        self.text_long = "long"  # TODO
         options = ["short text", "long text"]
 
         self.selected_option1 = tk.StringVar(new1)
