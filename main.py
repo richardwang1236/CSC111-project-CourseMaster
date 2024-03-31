@@ -16,7 +16,7 @@ def run_spider():
 mode = 1
 
 
-def read_file(file_name: str, directed: graph.DirectdGraph) -> dict:
+def read_file(file_name: str, directed: graph.DirectdGraph, undirected: graph.Graph) -> dict:
     """
     Read the courses.json file and return a dictionary of courses
     """
@@ -34,10 +34,11 @@ def read_file(file_name: str, directed: graph.DirectdGraph) -> dict:
         c = graph.Course(code, title, introduction, br, pre, exc, distribution)
         coursess[code] = c
         directed.add_vertex(code)
+        undirected.add_vertex(code)
     return coursess
 
 
-def transfer_to_graphs(coursess: dict[str:graph.Course], directed: graph.DirectdGraph):
+def transfer_to_graphs(coursess: dict[str:graph.Course], directed: graph.DirectdGraph, undirected: graph.Graph):
     """
     Transfer the courses to the directed and undirected graphs
     """
@@ -45,6 +46,8 @@ def transfer_to_graphs(coursess: dict[str:graph.Course], directed: graph.Directd
         code = c.code
         pre = c.pre
         exc = c.exc
+        for exclusion in exc:
+            undirected.add_edge(exclusion, code)
         for prerequisite in pre:
             directed.add_arc(prerequisite, code)
     return coursess
@@ -130,5 +133,5 @@ if __name__ == '__main__':
 
     start()
     directed_graph, undirected_graph, courses = initialization(mode)
-    main = gui.MainWindow(800, 700, undirected_graph, directed_graph, courses)
+    main = gui.MainWindow(500, 500, undirected_graph, directed_graph, courses)
     main.mainloop()
