@@ -343,29 +343,18 @@ class MainWindow(tk.Tk):
             courses = [c for c in self.course if c in course_copy]
             for course in courses:
                 a = self.directedgraph.get_vertices()[course].neighbours
-                if len(a) == 0 or (len(a) != 0 and k >= 2 and any(x.item in ard[k - 1] for x in a)):
+                if len(a) == 0 or (k >= 2 and any(x.item in ard[k - 1] for x in a)):
                     ar.append(course)
-                    course_copy.remove(course)        
-        # while len(course_copy) > 0:  # TODO
-        #     ar = []
-        #     for course in self.course:
-        #         if course in course_copy:
-        #             a = self.directedgraph.get_vertices()[course].neighbours
-        #             if len(a) == 0:
-        #                 ar.append(course)
-        #                 course_copy.remove(course)
-        #             elif k >= 2 and any(x.item in ard[k - 1] for x in a):
-        #                 ar.append(course)
-        #                 course_copy.remove(course)
+                    course_copy.remove(course)
             ard[k] = ar
             if not ar:
-                text = f'can not arrange the following courses due to lack of prerequisite {course_copy}'
+                text = f'can not arrange the following courses due to lack of prerequisite {' '.join(course_copy)}'
                 self.courser.set(text)
                 return
             k += 1
         for i in ard:
-            text += f'step{i}: take course {ard[i][0]}; \n'
-            self.courser.set(text)
+            text += f'step{i}: take course {' '.join(ard[i])}; \n'
+        self.courser.set(text)
 
     def example(self) -> None:
         """
