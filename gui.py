@@ -354,6 +354,7 @@ class MainWindow(tk.Tk):
                 self.courser.set(text)
                 return
             k += 1
+
         for i in ard:
             text += f'step{i}: take course {' '.join(ard[i])}; \n'
         self.courser.set(text)
