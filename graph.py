@@ -62,7 +62,7 @@ class _Vertex:
         visited.add(self)
         a = {self.item}
         for u in self.neighbours:
-            path=(self.item, u.item)
+            path = (self.item, u.item)
             # if u not in visited:
             if path not in a1:
                 a1.append(path)
