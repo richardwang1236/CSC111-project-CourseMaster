@@ -65,12 +65,13 @@ class MainWindow(tk.Tk):
 
         self.button4 = tk.Button(self, text='Course Arrange', command=self.button_click4)
 
-        self.button4 = tk.Button(self, text='Quit', command=self.button_click5)
+        self.button5 = tk.Button(self, text='Quit', command=self.button_click5)
 
         self.button.pack(pady=10)
         self.button1.pack(pady=10)
         self.button3.pack(pady=10)
         self.button4.pack(pady=10)
+        self.button5.pack(pady=10)
 
         self.button.configure(bg='blue', fg='white', font=("Helvetica", 16), relief=tk.RAISED, width=20, height=2)
         self.button1.configure(bg='green', fg='white', font=("Helvetica", 16), relief=tk.RAISED, width=20, height=2)
