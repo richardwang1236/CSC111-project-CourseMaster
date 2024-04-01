@@ -1,6 +1,7 @@
 """
 These are the modules we will be using for gui.py
 """
+from tkinter import messagebox
 import tkinter as tk
 import visualization
 import graph
@@ -17,19 +18,6 @@ class MainWindow(tk.Tk):
     is a single course. The user can also visualize the exclusion relationship of the course by clicking the "vis_exc"
     button.
     """
-    courser: tk.StringVar
-    entry1: tk.Entry
-    course: list[str]
-    text5: tk.StringVar
-    texta: tk.StringVar
-    text3: tk.StringVar
-    text4: tk.StringVar
-    entry: tk.Entry
-    text: tk.StringVar
-    selected_option1: tk.StringVar
-    text_long: str
-    text_short: str
-    selected_option: tk.StringVar
     courses: dict[str:graph.Course]
     directedgraph: graph.DirectdGraph
     undirected_graph: graph.Graph
@@ -38,8 +26,21 @@ class MainWindow(tk.Tk):
     button1: tk.Button
     button3: tk.Button
     button4: tk.Button
+    selected_option: tk.StringVar
+    selected_option1: tk.StringVar
+    text: tk.StringVar
+    text_short: str
+    text_long: str
+    entry: tk.Entry
+    text3: tk.StringVar
+    text4: tk.StringVar
+    text5: tk.StringVar
+    course: list[str]
+    entry1: tk.Entry
+    texta: tk.StringVar
     textb: tk.StringVar
     course22: tk.StringVar
+    courser: tk.StringVar
 
     def __init__(self, height_and_width: int, undirected_graph: graph.Graph, directedgraph: graph.DirectdGraph,
                  courses: dict[str:graph.Course]) -> None:
@@ -47,21 +48,7 @@ class MainWindow(tk.Tk):
         Initialize the main window of the GUI.
         """
         super().__init__()
-        self.courser = None
-        self.course22 = None
-        self.entry1 = None
-        self.course = []
-        self.text5 = None
-        self.texta = None
-        self.textb = None
-        self.text3 = None
-        self.text4 = None
-        self.entry = None
-        self.text = None
-        self.selected_option1 = None
-        self.text_long = None
-        self.text_short = None
-        self.selected_option = None
+
         self.courses = courses
         self.directedgraph = directedgraph
         self.undirected_graph = undirected_graph
@@ -70,13 +57,16 @@ class MainWindow(tk.Tk):
         self.label = tk.Label(self, text='Course Master', font=("Helvetica", 50))
         self.label.pack()
         self.title('CourseMaster')
-        self.button = tk.Button(self, text='visualization for exclusion', command=self.button_click)
+        self.button = tk.Button(self, text='Exclusion Visualization', command=self.button_click)
 
-        self.button1 = tk.Button(self, text='statistic', command=self.button_click1)
+        self.button1 = tk.Button(self, text='Statistics', command=self.button_click1)
 
-        self.button3 = tk.Button(self, text='course search', command=self.button_click3)
+        self.button3 = tk.Button(self, text='Course Search', command=self.button_click3)
 
-        self.button4 = tk.Button(self, text='course arrange', command=self.button_click4)
+        self.button4 = tk.Button(self, text='Course Arrange', command=self.button_click4)
+
+        self.button4 = tk.Button(self, text='Quit', command=self.button_click5)
+
         self.button.pack(pady=10)
         self.button1.pack(pady=10)
         self.button3.pack(pady=10)
@@ -91,14 +81,23 @@ class MainWindow(tk.Tk):
         self.button3.pack()
         self.button4.pack()
 
+    def button_click5(self) -> None:
+        """
+        Quits the program after having a pop-up window telling the user "thank you for using this program!"
+        """
+        self.quit()
+        messagebox.showinfo('Thank you!', 'Thank you for using this program!')
+
     def button_click(self) -> None:
         """
         Open a new window for the user to choose the size of the graph to visualize.
         """
         new = tk.Tk()
         new.geometry('300x400')
-        new.title('Visualization for exclusion')
-        options = ["small", "medium", "large"]
+        new.title('Visualization for Exclusion')
+        label1 = tk.Label(new, text='Choose Amount', font=("Helvetica", 20))
+        label1.pack()
+        options = ["Small (50)", "Medium (1000)", "Large (10000)"]
         self.selected_option = tk.StringVar(new)
         self.selected_option.set(options[1])
         for option in options:
@@ -112,7 +111,7 @@ class MainWindow(tk.Tk):
         number of courses in each distribution, and the number of courses in each breadth requirement.
         """
         new1 = tk.Tk()
-        new1.geometry('500x500')
+        new1.geometry('400x400')
         new1.title('Statistics')
         course_utsg = [c for c in self.undirected_graph.get_vertices().values() if c.item[-1] == '1']
         course_utsc = [c for c in self.undirected_graph.get_vertices().values() if c.item[-1] == '3']
@@ -140,15 +139,17 @@ class MainWindow(tk.Tk):
             if br and '5' in br[0]:
                 br12345[4] += 1
         self.text_short = (
-            f"Among the three campus of the university of toronto, there are "
+            f"Among the three campuses of the University of Toronto,      there are currently "
             f"{len(course_utsg) + len(course_utsc) + len(course_utm)} courses in total.")
         self.text_long = (
-            f"There are {len(course_utsg)} courses in UTSG, {len(course_utsc)} in UTSC and {len(course_utm)} in UTM.\n"
-            f"Among the three campus of the university of toronto, there are:\n\n "
+            f"Currently, there are {len(course_utsg)} courses in UTSG, {len(course_utsc)} in UTSC and {len(course_utm)}"
+            f" in UTM.\n\n"
+            f"Among the three campuses of the University of Toronto,        there are:\n\n "
             f"Science Courses: {sci_hum_soc[0]}\n Humanities Courses: {sci_hum_soc[1]}\n Social Science Courses: "
-            f"{sci_hum_soc[2]}\n\n\n\n br1: {br12345[0]}\n br2: {br12345[1]}\n br3: {br12345[2]}\n br4: {br12345[3]}\n "
-            f"br5:{br12345[4]}")
-        options = ["short text", "long text"]
+            f"{sci_hum_soc[2]}\n\n\n Courses in breadth 1: {br12345[0]}\n Courses in breadth 2: "
+            f"{br12345[1]}\n Courses in breadth 3: {br12345[2]}\n Courses in breadth 4: {br12345[3]}\n "
+            f"Courses in breadth 5: {br12345[4]}")
+        options = ["Short Summary", "Long Summary"]
 
         self.selected_option1 = tk.StringVar(new1)
         self.selected_option1.set(options[0])
@@ -174,14 +175,14 @@ class MainWindow(tk.Tk):
         Visualize the exclusion relationship of all courses in the graph based on the user's selection of the size of
         the graph to visualize.
         """
-        if self.selected_option.get() == 'small':
+        if self.selected_option.get() == 'Small (50)':
             a = 50
-        elif self.selected_option.get() == 'medium':
+        elif self.selected_option.get() == 'Medium (1000)':
             a = 1000
         else:
             a = 10000
-        visualization.visualize_graph(self.undirected_graph, max_vertices=a, title=f'exclusion relationship for all '
-                                                                                   f'courses ({a}) size')
+        visualization.visualize_graph(self.undirected_graph, max_vertices=a, title=f'Exclusion Relationship for all '
+                                                                                   f'Courses ({a}) Size')
 
     def search(self) -> None:
         """
@@ -208,6 +209,9 @@ class MainWindow(tk.Tk):
             dis = course.distribution
             text = f'{title}\n{intro}\ndistribution：{dis[0]}\nBreadth Req: {br[0]}'
             self.text4.set(text)
+        elif len(self.text3.get()) == 0:
+            text = 'Please search for a course to view details!'
+            self.text4.set(text)
         else:
             text = 'Please narrow down your search to view details!'
             self.text4.set(text)
@@ -221,6 +225,8 @@ class MainWindow(tk.Tk):
         click3 = tk.Tk()
         click3.geometry('500x500')
         click3.title('Course Search')
+        label3 = tk.Label(click3, text='Search for a Course', font=("Helvetica", 20))
+        label3.pack()
         self.entry = tk.Entry(click3)
         self.text3 = tk.StringVar(click3, value='Search for a Class!')
         self.text4 = tk.StringVar(click3)
@@ -249,7 +255,8 @@ class MainWindow(tk.Tk):
         click4 = tk.Tk()
         click4.geometry('500x500')
         click4.title('Course Arrange')
-
+        label4 = tk.Label(click4, text='Search for a Course to Add', font=("Helvetica", 20))
+        label4.pack()
         self.entry1 = tk.Entry(click4)
         self.entry1.pack()
         add_button = tk.Button(click4, text="Add", command=self.add)
@@ -268,7 +275,7 @@ class MainWindow(tk.Tk):
         t.pack()
         t1 = tk.Label(click4, textvariable=self.textb, wraplength=400, font=("Helvetica", 15))
         t1.pack()
-        t4 = tk.Label(click4, text='Course list')
+        t4 = tk.Label(click4, text='Current Course List: \n')
         t4.pack()
         t3 = tk.Label(click4, textvariable=self.course22, wraplength=400)
         t3.pack()
@@ -284,8 +291,11 @@ class MainWindow(tk.Tk):
             self.text5.set(text)
             g = self.undirected_graph.get_exc(self.text3.get())
             visualization.visualize_graph(g, max_vertices=500, item=self.text3.get(),
-                                          title=f'exclusion for {self.text3.get()}', layout='kamada_kawai_layout')
+                                          title=f'Exclusion for {self.text3.get()}', layout='kamada_kawai_layout')
             text = 'Graph Loaded!'
+            self.text5.set(text)
+        elif len(self.text3.get()) == 0:
+            text = 'Please search for a course to view exclusions!'
             self.text5.set(text)
         else:
             text = 'Narrow your search to view exclusions!'
@@ -357,7 +367,7 @@ class MainWindow(tk.Tk):
             k += 1
 
         for i in ard:
-            text += f'step{i}: take course {' '.join(ard[i])}; \n'
+            text += f'Step {i}: take course {' '.join(ard[i])}; \n'
         self.courser.set(text)
 
     def example(self) -> None:

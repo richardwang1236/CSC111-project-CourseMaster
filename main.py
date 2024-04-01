@@ -80,9 +80,9 @@ class CourseMaster:
         """
         mode_set = tk.Tk()
         mode_set.title("CourseMaster")
-        mode_set.geometry('300x300')
-        selected_option = tk.StringVar(value='use the default dataset')
-        options = ["use the default dataset", "update now(takes longer time)"]
+        mode_set.geometry('300x100')
+        selected_option = tk.StringVar(value='Use the Default Data Set')
+        options = ["Use the Default Data Set", "Update Data Set (This may take a while)"]
         for option in options:
             tk.Radiobutton(mode_set, text=option, variable=selected_option, value=option).pack(anchor=tk.W)
 
@@ -90,7 +90,7 @@ class CourseMaster:
             """
             Set the mode of the program
             """
-            if selected_option.get() == 'use the default dataset':
+            if selected_option.get() == 'Use the Default Data Set':
                 self.mode = 1
                 mode_set.destroy()
             else:
@@ -98,7 +98,7 @@ class CourseMaster:
                 self.mode = 0
                 mode_set.destroy()
 
-        b = tk.Button(mode_set, text='OK', command=c)
+        b = tk.Button(mode_set, text='Confirm', command=c)
         b.pack()
         mode_set.mainloop()
 
