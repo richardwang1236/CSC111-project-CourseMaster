@@ -1,7 +1,0 @@
-scrapy
-networkx
-plotly
-tkinter
-subprocess
-json
-typing
