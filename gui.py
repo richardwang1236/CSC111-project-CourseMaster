@@ -26,6 +26,7 @@ class MainWindow(tk.Tk):
     button1: tk.Button
     button3: tk.Button
     button4: tk.Button
+    button5: tk.Button
     selected_option: tk.StringVar
     selected_option1: tk.StringVar
     text: tk.StringVar
@@ -384,7 +385,7 @@ if __name__ == '__main__':
     import python_ta
 
     python_ta.check_all(config={
-        'extra-imports': [],  # the names (strs) of imported modules
+        'extra-imports': ['graph', 'tkinter', 'visualization'],  # the names (strs) of imported modules
         'allowed-io': [],  # the names (strs) of functions that call print/open/input
         'max-line-length': 120
     })

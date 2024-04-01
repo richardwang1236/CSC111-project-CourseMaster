@@ -6,7 +6,6 @@ import networkx as nx
 from plotly.graph_objs import Scatter, Figure
 import graph
 
-
 COLOUR_SCHEME = [
     '#2E91E5', '#E15F99', '#1CA71C', '#FB0D0D', '#DA16FF', '#222A2A', '#B68100',
     '#750D86', '#EB663B', '#511CFB', '#00A08B', '#FB00D1', '#FC0080', '#B2828D',
@@ -18,8 +17,8 @@ LINE_COLOUR = 'rgb(66,79,70)'
 VERTEX_BORDER_COLOUR = 'rgb(50, 50, 50)'
 BOOK_COLOUR = 'rgb(89, 205, 105)'
 USER_COLOUR = 'rgb(105, 89, 205)'
-h5_COLOUR = 'rgb(255, 217, 102)'
-red_COLOUR = 'rgb(220,20,60)'
+H5_COLOUR = 'rgb(255, 217, 102)'
+RED_COLOUR = 'rgb(220,20,60)'
 
 
 def visualize_graph(gp: graph.Graph,
@@ -45,13 +44,13 @@ def visualize_graph(gp: graph.Graph,
     colours = []
     for name in names:
         if name == item:
-            colours.append(red_COLOUR)
+            colours.append(RED_COLOUR)
         elif name[-1] == '1':
             colours.append(BOOK_COLOUR)
         elif name[-1] == '3':
             colours.append(USER_COLOUR)
         else:
-            colours.append(h5_COLOUR)
+            colours.append(H5_COLOUR)
     x_edges = []
     y_edges = []
     for edge in graph_nx.edges:
@@ -93,7 +92,7 @@ if __name__ == '__main__':
     import python_ta
 
     python_ta.check_all(config={
-        'extra-imports': [],  # the names (strs) of imported modules
+        'extra-imports': ['networkx', 'plotly.graph_objs', 'graph'],  # the names (strs) of imported modules
         'allowed-io': [],  # the names (strs) of functions that call print/open/input
         'max-line-length': 120
     })
