@@ -112,7 +112,7 @@ class MainWindow(tk.Tk):
         number of courses in each distribution, and the number of courses in each breadth requirement.
         """
         new1 = tk.Tk()
-        new1.geometry('400x400')
+        new1.geometry('400x500')
         new1.title('Statistics')
         course_utsg = [c for c in self.undirected_graph.get_vertices().values() if c.item[-1] == '1']
         course_utsc = [c for c in self.undirected_graph.get_vertices().values() if c.item[-1] == '3']
