@@ -1,0 +1,7 @@
+scrapy
+networkx
+plotly
+typing
+python-ta
+numpy
+scipy
